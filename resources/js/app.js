@@ -1,0 +1,17 @@
+import './bootstrap';
+
+import Alpine from 'alpinejs';
+import Echo from 'laravel-echo';
+
+window.Echo = new Echo({
+    broadcaster: 'reverb',
+    key: import.meta.env.VITE_REVERB_APP_KEY,
+    wsHost: import.meta.env.VITE_REVERB_HOST,
+    wsPort: import.meta.env.VITE_REVERB_PORT,
+    wssPort: import.meta.env.VITE_REVERB_PORT,
+    forceTLS: false,
+    enabledTransports: ['ws', 'wss'],
+});
+
+window.Alpine = Alpine;
+Alpine.start();

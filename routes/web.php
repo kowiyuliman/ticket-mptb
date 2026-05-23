@@ -1,0 +1,159 @@
+<?php
+
+use App\Http\Controllers\ProfileController;
+use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\TicketController;
+use App\Http\Controllers\ChangePasswordController;
+use App\Http\Controllers\Admin\TicketController as AdminTicketController;
+use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
+use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\Admin\ReportController as AdminReportController;
+use App\Http\Controllers\Admin\UserController as AdminUserController;
+use App\Models\Ticket;
+use Illuminate\Support\Facades\DB;
+
+
+Route::get('/', function () {
+    return view('welcome');
+});
+
+Route::get('/dashboard',[DashboardController::class,'index'])->middleware(['auth']);
+
+
+//route user 
+Route::middleware(['auth'])->group(function(){
+
+    Route::get('/create-ticket',[TicketController::class,'create']);
+    Route::post('/create-ticket',[TicketController::class,'store']);
+    Route::get('/my-tickets',[TicketController::class,'index']);
+    Route::get('/ticket/{id}',[TicketController::class,'show']);
+    Route::get('/change-password', [ChangePasswordController::class, 'index']);
+    Route::post('/change-password', [ChangePasswordController::class, 'update']);
+    
+});
+
+Route::prefix('admin')->middleware(['auth'])->group(function(){
+
+    //route tiket
+    Route::get('/tickets', [AdminTicketController::class,'index']);
+    Route::get('/TicketAdmin', [AdminTicketController::class,'TicketAdmin']);
+    Route::get('/ticket/show/{id}', [AdminTicketController::class,'show']);
+    Route::get('/ticket/edit/{id}', [AdminTicketController::class,'edit']);
+    Route::post('/ticket/update/{id}', [AdminTicketController::class,'update']);
+    Route::post('/ticket/comment/{id}', [AdminTicketController::class,'comment']);
+    Route::delete('/ticket/delete/{id}', [AdminTicketController::class,'destroy']);
+
+    //route get tiket
+    Route::get('/ticket/take/{id}', [AdminTicketController::class,'takeTicket']);
+    Route::post('/ticket/reassign/{id}', [AdminTicketController::class,'reassign']);
+    Route::get('/tickets', [AdminTicketController::class,'index']);
+    Route::get('/my-ticket', [AdminTicketController::class,'myTicket']);
+    Route::post('/ticket/take/{id}', [AdminTicketController::class,'takeTicket']);
+
+    //route report
+    Route::get('/report', [AdminReportController::class,'index']);
+    Route::get('/report/export', [AdminReportController::class,'export']);
+
+    //route management users
+    Route::get('/users', [AdminUserController::class,'index']);
+    Route::get('/users/create', [AdminUserController::class,'create']);
+    Route::post('/users/store', [AdminUserController::class,'store']);
+    Route::get('/users/edit/{id}', [AdminUserController::class,'edit']);
+    Route::post('/users/update/{id}', [AdminUserController::class,'update']);
+    Route::delete('/users/delete/{id}', [AdminUserController::class,'destroy']);
+
+    //route import bulk user
+    Route::post('/users/import', [AdminUserController::class,'import']);
+
+    //ticket cancel
+    Route::post('/ticket/cancel/{id}', [AdminTicketController::class,'cancel']);
+
+    //auto refresh new ticket
+    Route::get('/ticket/fetch', [AdminTicketController::class, 'fetchTickets']);
+
+    //dashboard realtime
+    Route::get('/dashboard/realtime', [DashboardController::class, 'realtime']);
+
+});
+
+// Route::get('/admin/check-ticket', function(){
+
+//     if(auth()->user()->role != 'admin'){
+//         return response()->json([
+//             'ticket_id' => 0
+//         ]);
+//     }
+
+//     $ticket = \App\Models\Ticket::latest()->first();
+
+//     return response()->json([
+//         'ticket_id' => $ticket?->id ?? 0,
+//         'message' => $ticket
+//             ? 'Ticket baru dari '.$ticket->nama
+//             : 'Tidak ada ticket'
+//     ]);
+
+// })->middleware('auth');
+
+Route::get('/admin/check-ticket', function(){
+
+    if(auth()->user()->role != 'admin'){
+
+        return response()->json([
+            'ticket_id' => 0
+        ]);
+
+    }
+
+    $ticket = Ticket::latest()->first();
+
+    return response()->json([
+
+        'ticket_id' => $ticket?->id ?? 0,
+
+        'message' => $ticket
+            ? 'Ticket baru dari '.$ticket->nama
+            : 'Tidak ada ticket'
+
+    ]);
+
+})->middleware('auth');
+
+
+// Route::prefix('leader')->middleware(['auth'])->group(function(){
+
+//     Route::get('/users', [AdminUserController::class,'index']);
+//     Route::get('/users/create', [AdminUserController::class,'create']);
+//     Route::post('/users/store', [AdminUserController::class,'store']);
+//     Route::get('/users/edit/{id}', [AdminUserController::class,'edit']);
+//     Route::post('/users/update/{id}', [AdminUserController::class,'update']);
+//     Route::delete('/users/delete/{id}', [AdminUserController::class,'destroy']);
+
+// });
+    
+    Route::get('/notification/{id}', function($id){
+    $notification = auth()->user()->notifications()->findOrFail($id);
+    // tandai sudah dibaca
+    $notification->markAsRead();
+
+    $notification->delete(); // langsung hapus
+
+    // cek apakah ada URL
+    $url = $notification->data['url'] ?? '/dashboard';
+
+    // redirect aman
+    return redirect($url);
+    });
+
+    Route::get('/notifications/read', function(){
+    auth()->user()->unreadNotifications->markAsRead();
+    return back();
+    });
+    
+
+    Route::delete('/notifications/clear', function () {
+    auth()->user()->notifications()->delete(); // hapus semua
+    return back()->with('success', 'Notifikasi berhasil dibersihkan');
+    })->middleware('auth');
+
+require __DIR__.'/auth.php';
