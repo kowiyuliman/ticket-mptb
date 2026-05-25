@@ -120,7 +120,8 @@
 
         {{-- START --}}
         <p>
-            <b>Mulai Dikerjakan:</b><br>
+            <b>Mulai Dikerjakan:</b>
+            <br>
             @if($ticket->started_at instanceof \Carbon\Carbon)
                 {{ $ticket->started_at->format('d-m-Y H:i') }}
             @else
@@ -157,6 +158,31 @@
             </span>
         @endif
     </p>
+    </div>
+</div>
+
+    <div class="card mt-3">
+        <div class="card-header">
+            <h3 class="card-title">
+                <b>Histori Aktivitas</b>
+            </h3>
+        </div>
+        <div class="card-body">
+            @foreach(
+                $ticket->timelines
+                ->sortByDesc('created_at')
+                as $timeline
+            )
+            <div class="timeline-item mb-3">
+                <small class="text-muted">
+                    {{ $timeline->created_at->format('d-m-Y H:i') }}
+                </small>
+                <br>
+                {{ $timeline->description }}
+            </div>
+            <hr>
+            @endforeach
+        </div>
     </div>
 </div>
 </div>

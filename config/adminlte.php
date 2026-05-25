@@ -369,6 +369,13 @@ return [
         ],
 
         [
+        'text' => 'Ticket Cacelled',
+        'url'  => 'admin/cancelled',
+        'icon' => 'fas fa-list',
+        'can' => ['admin'], 
+        ],
+
+        [
         'text' => 'My Asset',
         'url'  => 'http://192.168.200.2:3000/public-directory',
         'icon' => 'fas fa-boxes',

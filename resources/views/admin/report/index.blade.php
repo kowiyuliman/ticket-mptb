@@ -12,21 +12,16 @@
 <div class="card">
     <div class="card-header">Filter</div>
     <div class="card-body">
-
         <form method="GET" action="/admin/report">
-
             <div class="row">
-
                 <div class="col-md-3">
                     <label>Tanggal Mulai</label>
                     <input type="date" name="start_date" class="form-control" value="{{ request('start_date') }}">
                 </div>
-
                 <div class="col-md-3">
                     <label>Tanggal Selesai</label>
                     <input type="date" name="end_date" class="form-control" value="{{ request('end_date') }}">
                 </div>
-
                 <div class="col-md-2">
                     <label>Status</label>
                     <select name="status" class="form-control">
@@ -35,9 +30,9 @@
                         <option value="on_progress">On Progress</option>
                         <option value="pending">Pending</option>
                         <option value="closed">Closed</option>
+                        <option value="cancelled">Cancelled</option>
                     </select>
                 </div>
-
                 <div class="col-md-2">
                     <label>Kategori</label>
                     <select name="kategori" class="form-control">
@@ -48,7 +43,6 @@
                         <option value="other">Other</option>
                     </select>
                 </div>
-
                 <div class="col-md-2">
                     <label>Teknisi</label>
                     <select name="assigned_to" class="form-control">
@@ -58,22 +52,16 @@
                         @endforeach
                     </select>
                 </div>
-
             </div>
-
-            <br>
-
+        <br>
             <button class="btn btn-primary">
                 Filter
             </button>
-
             <a href="/admin/report/export?{{ http_build_query(request()->all()) }}" 
                class="btn btn-success">
             Export CSV
             </a>
-
         </form>
-
     </div>
 </div>
 

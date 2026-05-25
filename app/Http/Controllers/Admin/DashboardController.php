@@ -31,7 +31,7 @@ class DashboardController extends Controller
             });
         }
 
-        // CACHE PER ROLE (🔥 penting)
+        // CACHE PER ROLE (penting)
         $cacheKey = 'dashboard_'.$user->role.'_'.$user->id;
 
         $stats = Cache::remember($cacheKey, 30, function() use ($query){

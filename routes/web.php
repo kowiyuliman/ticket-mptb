@@ -13,12 +13,9 @@ use App\Models\Ticket;
 use Illuminate\Support\Facades\DB;
 
 
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::get('/', function () {return view('welcome');});
 
 Route::get('/dashboard',[DashboardController::class,'index'])->middleware(['auth']);
-
 
 //route user 
 Route::middleware(['auth'])->group(function(){
@@ -43,6 +40,10 @@ Route::prefix('admin')->middleware(['auth'])->group(function(){
     Route::post('/ticket/comment/{id}', [AdminTicketController::class,'comment']);
     Route::delete('/ticket/delete/{id}', [AdminTicketController::class,'destroy']);
 
+    // route cancel ticket
+    Route::get('/cancelled', [AdminTicketController::class, 'cancelled']);
+    Route::post('/ticket/cancel/{id}', [AdminTicketController::class, 'cancel']);
+
     //route get tiket
     Route::get('/ticket/take/{id}', [AdminTicketController::class,'takeTicket']);
     Route::post('/ticket/reassign/{id}', [AdminTicketController::class,'reassign']);
@@ -65,9 +66,6 @@ Route::prefix('admin')->middleware(['auth'])->group(function(){
     //route import bulk user
     Route::post('/users/import', [AdminUserController::class,'import']);
 
-    //ticket cancel
-    Route::post('/ticket/cancel/{id}', [AdminTicketController::class,'cancel']);
-
     //auto refresh new ticket
     Route::get('/ticket/fetch', [AdminTicketController::class, 'fetchTickets']);
 
@@ -76,47 +74,22 @@ Route::prefix('admin')->middleware(['auth'])->group(function(){
 
 });
 
-// Route::get('/admin/check-ticket', function(){
-
-//     if(auth()->user()->role != 'admin'){
-//         return response()->json([
-//             'ticket_id' => 0
-//         ]);
-//     }
-
-//     $ticket = \App\Models\Ticket::latest()->first();
-
-//     return response()->json([
-//         'ticket_id' => $ticket?->id ?? 0,
-//         'message' => $ticket
-//             ? 'Ticket baru dari '.$ticket->nama
-//             : 'Tidak ada ticket'
-//     ]);
-
-// })->middleware('auth');
 
 Route::get('/admin/check-ticket', function(){
 
     if(auth()->user()->role != 'admin'){
-
         return response()->json([
             'ticket_id' => 0
         ]);
-
     }
 
     $ticket = Ticket::latest()->first();
-
     return response()->json([
-
         'ticket_id' => $ticket?->id ?? 0,
-
         'message' => $ticket
             ? 'Ticket baru dari '.$ticket->nama
             : 'Tidak ada ticket'
-
     ]);
-
 })->middleware('auth');
 
 

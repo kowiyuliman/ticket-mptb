@@ -31,17 +31,16 @@ class DashboardController extends Controller
             });
         }
 
-        // CACHE PER ROLE (🔥 penting)
+        // CACHE PER ROLE (penting)
         $cacheKey = 'dashboard_'.$user->role.'_'.$user->id;
-
         $stats = Cache::remember($cacheKey, 30, function() use ($query){
-
             return [
                 'total' => (clone $query)->count(),
                 'open' => (clone $query)->where('status','open')->count(),
                 'progress' => (clone $query)->where('status','on_progress')->count(),
                 'pending' => (clone $query)->where('status','pending')->count(),
                 'closed' => (clone $query)->where('status','closed')->count(),
+                'cancelled' => (clone $query)->where('status','cancelled')->count(),
             ];
         });
 
@@ -51,6 +50,7 @@ class DashboardController extends Controller
         $progress = $stats['progress'];
         $pending = $stats['pending'];
         $closed = $stats['closed'];
+        $cancelled = $stats['cancelled'];
 
         // TODAY
         $today = (clone $query)->whereDate('created_at', now())->count();
@@ -135,8 +135,10 @@ class DashboardController extends Controller
                 'progress' => (clone $tickets)->where('status','on_progress')->count(),
                 'pending' => (clone $tickets)->where('status','pending')->count(),
                 'closed' => (clone $tickets)->where('status','closed')->count(),
+                'cancelled' => (clone $tickets)->where('status','cancelled')->count(),
                 'total_ticket' => (clone $tickets)->count(),
             ];
+
         });
 
         return view('admin.dashboard', compact(
@@ -145,6 +147,7 @@ class DashboardController extends Controller
             'progress',
             'pending',
             'closed',
+            'cancelled',
             'today',
             'daily',
             'monthly',
@@ -221,6 +224,7 @@ class DashboardController extends Controller
                 'progress' => Ticket::where('status','on_progress')->count(),
                 'pending' => Ticket::where('status','pending')->count(),
                 'closed' => Ticket::where('status','closed')->count(),
+                'cancelled' => Ticket::where('status','cancelled')->count(),
                 'daily' => $daily,
                 // 'monthly' => $monthly,
                 'monthly_labels' => $monthlyLabels,

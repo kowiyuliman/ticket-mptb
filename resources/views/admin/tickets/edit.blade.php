@@ -226,6 +226,28 @@
             @endif
         </p>
     </div>
+<br>
+
+    <form action="{{ url('/admin/ticket/cancel/'.$ticket->id) }}"
+        method="POST">
+        @csrf
+        <div class="form-group">
+            <label>Alasan Cancel</label>
+            <textarea
+                name="reason"
+                class="form-control"
+                rows="3"
+                required></textarea>
+        </div>
+        <button
+            type="submit"
+            class="btn btn-danger"
+            onclick="return confirm('Yakin ingin membatalkan ticket ini?')">
+
+            <i class="fas fa-times-circle"></i>
+            Cancel Ticket
+        </button>
+    </form>
 </div>
 </div>
 @stop

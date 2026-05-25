@@ -11,7 +11,6 @@
 
 @section('content')
 <br>
-
 <div class="card shadow-sm mb-4">
     <div class="card-header bg-info">
              <h3 class="card-title text-white mb-0">
@@ -55,14 +54,6 @@
                                         <i class="fas fa-eye"></i>
                                     </a>
                                 </form>
-                                <!-- <form action="/admin/ticket/cancel/{{ $ticket->id }}" method="POST" style="display:inline;">
-                                    @csrf
-                                    <button class="btn btn-danger btn-sm"
-                                        onclick="return confirm('Yakin cancel ticket?')"
-                                        title="Cancel">
-                                        <i class="fas fa-times"></i>
-                                    </button>
-                                </form> -->
                             </td>
                         </tr>
                     @endforeach
@@ -112,14 +103,6 @@
                                 class="btn btn-info btn-sm" title="Detail">
                                     <i class="fas fa-eye"></i>
                                 </a>
-                                <!-- <form action="/admin/ticket/cancel/{{ $ticket->id }}" method="POST" style="display:inline;">
-                            @csrf
-                            <button class="btn btn-danger btn-sm"
-                                onclick="return confirm('Yakin cancel ticket?')"
-                                title="Cancel">
-                                <i class="fas fa-times"></i>
-                            </button>
-                        </form> -->
                             </td>
                         </tr>
                     @endforeach
@@ -169,14 +152,6 @@
                                 class="btn btn-info btn-sm" title="Detail">
                                     <i class="fas fa-eye"></i>
                                 </a>
-                                <!-- <form action="/admin/ticket/cancel/{{ $ticket->id }}" method="POST" style="display:inline;">
-                                @csrf
-                                <button class="btn btn-danger btn-sm"
-                                    onclick="return confirm('Yakin cancel ticket?')"
-                                    title="Cancel">
-                                    <i class="fas fa-times"></i>
-                                </button>
-                            </form> -->
                             </td>
                         </tr>
                     @endforeach
@@ -250,6 +225,8 @@
 {{-- CSS DataTables --}}
 @section('css')
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.5.0/css/responsive.dataTables.min.css">
+    <script src="https://cdn.datatables.net/responsive/2.5.0/js/dataTables.responsive.min.js"></script>
 
     <style>
         td:first-child, th:first-child {
@@ -318,18 +295,33 @@
             transition:0.2s;
         }
 
-        .dataTables_processing{
-            z-index:9999;
+        .table-responsive{
+            width:100%;
+            overflow-x:auto;
+            -webkit-overflow-scrolling:touch;
         }
 
-        .dataTables_filter input{
+        table.dataTable{
             width:100% !important;
-            margin-top:10px;
         }
 
-        .dataTables_length,
-        .dataTables_filter{
-            text-align:left !important;
+        .table{
+            width:100% !important;
+        }
+
+        .table td,
+        .table th{
+            vertical-align:middle;
+            white-space:normal !important;
+            word-break:break-word;
+        }
+
+        .dataTables_wrapper{
+            width:100%;
+        }
+
+        .dataTables_scrollBody{
+            overflow-x:auto !important;
         }
     }
             
@@ -372,7 +364,6 @@
             $('#table-open').DataTable({
                 responsive: true,
                 autoWidth: false,
-                scrollX: true,
                 pageLength: 5,
                 lengthMenu: [5,10,25,50],
                 language: {
@@ -383,7 +374,6 @@
             $('#table-progress').DataTable({
                 responsive: true,
                 autoWidth: false,
-                scrollX: true,
                 pageLength: 5,
                 lengthMenu: [5,10,25,50],
                 language: {
@@ -394,7 +384,6 @@
             $('#table-pending').DataTable({
                  responsive: true,
                 autoWidth: false,
-                scrollX: true,
                 pageLength: 5,
                 lengthMenu: [5,10,25,50],
                 language: {
@@ -405,7 +394,6 @@
             $('#table-closed').DataTable({
                  responsive: true,
                 autoWidth: false,
-                scrollX: true,
                 pageLength: 5,
                 lengthMenu: [5,10,25,50],
                 language: {
@@ -417,20 +405,6 @@
     </script>
 
     <script>
-        // function showToast('Ticket baru masuk', 'success') {
-        //     let toast = document.createElement('div');
-        //     toast.className = 'toast-custom toast-' + type;
-        //     toast.innerHTML = message;
-
-        //     document.body.appendChild(toast);
-
-        //     setTimeout(() => {
-        //         toast.style.opacity = '0';
-        //         toast.style.transform = 'translateX(100%)';
-        //         setTimeout(() => toast.remove(), 500);
-        //     }, 4000);
-        // }
-
         function showToast(message, type = 'success')
         {
             let toast = document.createElement('div');
@@ -457,13 +431,6 @@
             showToast("{{ session('error') }}", 'error');
         @endif
     </script>
-
-    <!-- <script>
-        $('#table-cancel').DataTable({
-        order: [[0, 'desc']],
-        responsive: true
-        });
-    </script> -->
 
     <script>
         async function loadTickets(){

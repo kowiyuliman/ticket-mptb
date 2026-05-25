@@ -43,7 +43,8 @@ return new class extends Migration
             'open',
             'pending',
             'on_progress',
-            'closed'
+            'closed',
+            'cancelled'
         ])->default('open');
 
         $table->foreignId('assigned_to')->nullable();

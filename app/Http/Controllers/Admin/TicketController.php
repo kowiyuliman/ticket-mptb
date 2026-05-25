@@ -14,6 +14,7 @@ use Carbon\Carbon;
 use App\Models\User;
 
 
+
 class TicketController extends Controller
 {
     public function index(Request $request)
@@ -133,7 +134,8 @@ class TicketController extends Controller
         TicketComment::create([
             'ticket_id'=>$id,
             'user_id'=>Auth::id(),
-            'comment'=>$request->comment
+            'comment'=>$request->comment,
+            'user_id' => Auth::id()
         ]);
 
         return back()->with('success','Komentar berhasil ditambahkan');
@@ -185,19 +187,30 @@ class TicketController extends Controller
     }
 
 
-    public function cancel($id)
+    public function cancelled()
     {
-         $ticket = Ticket::findOrFail($id);
-
-        // hanya admin/technician boleh cancel
-        if(!in_array(auth()->user()->role, ['admin','technician'])){
-            return back()->with('error','Tidak punya akses');
+        if(auth()->user()->role != 'admin'){
+            abort(403);
         }
 
-        // tidak bisa cancel jika sudah closed
-        if($ticket->status == 'closed'){
-            return back()->with('error','Ticket sudah selesai');
+        $tickets = Ticket::where('status','cancelled')
+            ->orderByDesc('updated_at')
+            ->paginate(20);
+
+        return view('admin.tickets.cancelled', compact('tickets'));
+    }
+
+    public function cancel(Request $request, $id)
+    {
+        if(auth()->user()->role != 'admin'){
+            abort(403,'Akses ditolak');
         }
+
+        $request->validate([
+            'reason' => 'required'
+        ]);
+
+        $ticket = Ticket::findOrFail($id);
 
         $ticket->update([
             'status' => 'cancelled',
@@ -205,27 +218,28 @@ class TicketController extends Controller
         ]);
 
         // history
-        \App\Models\TicketHistory::create([
-            'ticket_id' => $ticket->id,
-            'status' => 'cancelled',
-            'keterangan' => 'Ticket dibatalkan oleh ' . auth()->user()->name,
+        TicketHistory::create([
+            'ticket_id'  => $ticket->id,
+            'status'     => 'cancelled',
+            'keterangan' => $request->reason,
             'updated_by' => auth()->id()
         ]);
 
         // timeline
-        \App\Models\TicketTimeline::create([
-            'ticket_id' => $ticket->id,
-            'status' => 'cancelled',
-            'description' => 'Ticket dibatalkan oleh admin'
+        TicketTimeline::create([
+            'ticket_id'   => $ticket->id,
+            'status'      => 'cancelled',
+            'description' => 'Ticket dibatalkan. Alasan: '.$request->reason,
+            'user_id'     => auth()->id()
         ]);
 
-        // notif ke user (optional)
-        if($ticket->user){
-            $ticket->user->notify(new \App\Notifications\TicketUpdateNotification($ticket));
-        }
-
-        return back()->with('success','Ticket berhasil dibatalkan');
+        return redirect('/admin/tickets')
+            ->with(
+                'success',
+                'Ticket berhasil dibatalkan'
+            );
     }
+    
 
     public function fetchTickets()
     {

@@ -10,7 +10,6 @@
 
     {{-- STATISTIK --}}
     <div class="row">
-
         @php
             $cards = [
                 ['title'=>'Total Ticket','value'=>$total,'color'=>'info','icon'=>'fas fa-ticket-alt'],
@@ -18,6 +17,7 @@
                 ['title'=>'On Progress','value'=>$progress,'color'=>'primary','icon'=>'fas fa-spinner'],
                 ['title'=>'Pending','value'=>$pending,'color'=>'danger','icon'=>'fas fa-pause-circle'],
                 ['title'=>'Closed','value'=>$closed,'color'=>'success','icon'=>'fas fa-check-circle'],
+                ['title'=>'Cancelled','value'=>$cancelled,'color'=>'secondary','icon'=>'fas fa-ban'],
             ];
         @endphp
 
@@ -37,7 +37,7 @@
         </div>
         @endforeach
 
-    </div>
+ 
     <div class="col-md-12">
             <div class="card-header">
                 <h3 class="card-title">Statistik Tiket</h3>
@@ -91,6 +91,7 @@
             </div>
         </div>
     </div>
+</div>
 
     {{-- CHART ROW 1 --}}
     <div class="row mt-3">
@@ -261,13 +262,18 @@
 
         // DATATABLE
         $('#leaderTable').DataTable({
-            responsive: true,
-            autoWidth: false,
-            scrollX: true,
-            pageLength: 5,
+            responsive:true,
+            autoWidth:false,
             lengthMenu: [5,10,25,50],
+            order:[[3,'desc']],
+            columnDefs:[
+                {
+                    targets:[0,2,3,4,5,6,7],
+                    className:'text-center'
+                }
+            ]
         });
-
+        
         // CHART OPTIONS
         // const options = {
         //     responsive: true,
@@ -278,6 +284,8 @@
         //         }
         //     }
         // };
+
+        
         const options = {
             responsive: true,
             maintainAspectRatio: false,
@@ -556,6 +564,7 @@
             document.getElementById('card-on-progress').innerText = data.progress;
             document.getElementById('card-pending').innerText = data.pending;
             document.getElementById('card-closed').innerText = data.closed;
+            document.getElementById('card-cancelled').innerText = data.cancelled;
 
             // DAILY
             dailyChart.data.labels = Object.keys(data.daily);
@@ -588,9 +597,11 @@
 
 @section('css')
 <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+<link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.5.0/css/responsive.dataTables.min.css">
+<script src="https://cdn.datatables.net/responsive/2.5.0/js/dataTables.responsive.min.js"></script>
+
 
     <style>
-
         .ticket-popup{
             position: fixed;
             top: 20px;
@@ -614,6 +625,20 @@
                 transform: translateX(0);
                 opacity:1;
             }
+        }
+
+        .table-responsive{
+            overflow-x:auto;
+        }
+
+        #leaderTable{
+            width:100% !important;
+        }
+
+        #leaderTable th,
+        #leaderTable td{
+            white-space:nowrap;
+            vertical-align:middle;
         }
        
         /* BASE STYLE */
