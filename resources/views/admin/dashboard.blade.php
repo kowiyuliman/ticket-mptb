@@ -212,7 +212,7 @@
                 </div>
             </div>
         </div>
-
+        
         <!-- <div class="col-md-6">
             <div class="card card-outline card-dark">
                 <div class="card-header">
@@ -223,6 +223,7 @@
                 </div>
             </div>
         </div> -->
+
     </div>
 </div>
 
@@ -233,10 +234,10 @@
 @stop
 
 @section('js')
-
 <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/responsive/2.5.0/js/dataTables.responsive.min.js"></script>
 
 <script>
 
@@ -285,7 +286,7 @@
         //     }
         // };
 
-        
+
         const options = {
             responsive: true,
             maintainAspectRatio: false,
@@ -598,8 +599,6 @@
 @section('css')
 <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
 <link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.5.0/css/responsive.dataTables.min.css">
-<script src="https://cdn.datatables.net/responsive/2.5.0/js/dataTables.responsive.min.js"></script>
-
 
     <style>
         .ticket-popup{

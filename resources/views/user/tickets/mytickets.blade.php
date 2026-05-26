@@ -30,10 +30,11 @@
                         <span class="badge bg-primary">On Progress</span>
                     @elseif($ticket->status == 'closed')
                         <span class="badge bg-success">Closed</span>
+                    @elseif($ticket->status == 'cancelled')
+                        <span class="badge bg-danger">Cancelled</span>
                     @endif
                 </td>
                 <td>{{ $ticket->created_at->format('d-m-Y H:i') }}</td>
-               
                 <td>
                     <a href="/ticket/{{$ticket->id}}" 
                         class="btn btn-sm btn-info"><i class="fas fa-eye"></i>
@@ -43,7 +44,6 @@
             </tr>
         @endforeach
     </tbody>
-   
         <!-- FLOATING BUTTON -->
         <div id="wa-button" class="wa-button">
             <i class="fab fa-whatsapp"></i>
@@ -65,11 +65,8 @@
                 </a>
             </div>
         </div>
-
-  
-
-</div>
-</div>
+    </div>
+    </div>
 </div>
 </table>
 <!-- {{ $tickets->links() }} Pagination -->
@@ -358,6 +355,4 @@ document.getElementById("wa-link").href =
 
     });
 </script>
-
-
 @stop

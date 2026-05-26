@@ -8,7 +8,6 @@
 
 @section('content')
 
-
 <div class="card mb-3">
     <div class="card-body">
      @if(auth()->user()->role == 'admin')
@@ -29,9 +28,9 @@
     @endif
 
         <a href="/admin/users/create" class="btn btn-primary mb-3">
-            <i class="fas fa-plus"></i> Tambah User
+            <i class="fas fa-plus"></i>
+                Tambah User
         </a>
-
 
         @if(auth()->user()->role == 'admin')
             <form action="/admin/users/import" method="POST" enctype="multipart/form-data">
@@ -51,10 +50,31 @@
     </div>
 </div>
 
+    <form id="bulkDeleteForm"
+        action="/admin/users/bulkDelete"
+        method="POST">
+        @csrf
+        @method('DELETE')
+        <input type="hidden"
+            name="selected_users"
+            id="selected_users">
+        <button type="submit"
+                id="btnDeleteSelected"
+                class="btn btn-danger mb-3"
+                onclick="return confirm('Hapus semua user yang dipilih?')">
+            <i class="fas fa-trash"></i>
+            Hapus Terpilih
+            (<span id="selectedCount">0</span>)
+        </button>
+
+    </form>
 
 <table id="table-user" class="table table-bordered table-striped">
     <thead>
         <tr>
+            <th>
+                <input type="checkbox" id="checkAll">
+            </th>
             <th>No</th>
             <th>Nama</th>
             <th>Username</th>
@@ -65,101 +85,154 @@
     </thead>
     <tbody>
         @foreach($users as $user)
-            <tr>
-                <td>{{ $loop->iteration }}</td>
-                <td>{{ $user->name }}</td>
-                <td>{{ $user->username }}</td>
-                <td>
-                    <span class="badge bg-info">{{ $user->role }}</span>
-                </td>
-                <td>{{ $user->leader->name ?? '-' }}</td>
-                <td>
-                    <a href="/admin/users/edit/{{ $user->id }}" class="btn btn-sm btn-warning">
-                        <i class="fas fa-edit"></i>
-                    </a>
-
-                    <form action="/admin/users/delete/{{ $user->id }}" method="POST" style="display:inline;">
-                        @csrf
-                        @method('DELETE')
-                        <button class="btn btn-sm btn-danger" onclick="return confirm('Hapus user?')">
-                            <i class="fas fa-trash"></i>
-                        </button>
-                    </form>
-                </td>
-            </tr>
+        <tr>
+            <td>
+                <input type="checkbox" class="user-checkbox" value="{{ $user->id }}">
+            </td>
+            <td>{{ $loop->iteration }}</td>
+            <td>{{ $user->name }}</td>
+            <td>{{ $user->username }}</td>
+            <td>
+                <span class="badge bg-info">
+                    {{ $user->role }}
+                </span>
+            </td>
+            <td>
+                {{ $user->leader->name ?? '-' }}
+            </td>
+            <td>
+                <a href="/admin/users/edit/{{ $user->id }}"
+                    class="btn btn-warning btn-sm">
+                    <i class="fas fa-edit"></i>
+                </a>
+                <form action="/admin/users/delete/{{ $user->id }}"
+                    method="POST"
+                    style="display:inline">
+                    @csrf
+                    @method('DELETE')
+                    <button class="btn btn-danger btn-sm"
+                        onclick="return confirm('Hapus user?')">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </form>
+            </td>
+        </tr>
         @endforeach
-    </tbody>
+    </tbody> 
 </table>
 @stop
 
 
 @section('css')
 <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
-<style>
+    <style>
         td:first-child, th:first-child {
                     text-align: center;
                     width: 50px;
                 }
     </style>
-
-<style>
-        .btn-filter.active {
-        box-shadow: 0 0 10px rgba(0,0,0,0.3);
-        transform: scale(1.05);
-    }
-</style>
+    <style>
+            .btn-filter.active {
+            box-shadow: 0 0 10px rgba(0,0,0,0.3);
+            transform: scale(1.05);
+        }
+    </style>
 @stop
 
 
 @section('js')
-
 <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
 <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
 
 <script>
-    let table = $('#your-table-id').DataTable();
-        table.on('order.dt search.dt', function () {
-            table.column(0, { search:'applied', order:'applied' })
-                .nodes()
-                .each(function (cell, i) {
-                    cell.innerHTML = i + 1;
-                });
-        }).draw();
-</script>
-
-<script>
     $(document).ready(function() {
-
         let table = $('#table-user').DataTable({
             responsive: true,
-            autoWidth: false
+            autoWidth: false,
+
+            columnDefs: [
+                {
+                    targets: 0,
+                    orderable: false,
+                    searchable: false
+                },
+                {
+                    targets: 6,
+                    orderable: false,
+                    searchable: false
+                }
+            ]
+            
+        });
+                
+        //hapus banyak user
+        $('#checkAll').on('click', function(){
+            $('.user-checkbox').prop(
+                'checked',
+                $(this).prop('checked')
+            );
+            updateSelectedCount();
         });
 
-        // FILTER ROLE
-        $('.btn-filter').click(function() {
+        $('#bulkDeleteForm').submit(function(e){
+            let selected = [];
+            $('.user-checkbox:checked').each(function(){
+                selected.push($(this).val());
+            });
+            if(selected.length === 0){
+                alert('Pilih minimal 1 user');
+                return false;
+            }
+            $('#selected_users').val(
+                JSON.stringify(selected)
+            );
+        });
 
+        function updateSelectedCount(){
+            let total =
+                $('.user-checkbox:checked').length;
+            $('#selectedCount').text(total);
+            let btn = $('#btnDeleteSelected');
+            btn.prop('disabled', total === 0);
+            if(total > 0){
+                btn.removeClass('btn-secondary')
+                .addClass('btn-danger');
+            }else{
+                btn.removeClass('btn-danger')
+                .addClass('btn-secondary');
+            }
+        }
+
+        $(document).on(
+            'change',
+            '.user-checkbox',
+            function(){
+                updateSelectedCount();
+            }
+        );
+
+        table.on('draw', function(){
+            updateSelectedCount();
+        });
+
+        $('.btn-filter').click(function(){
             let role = $(this).data('role');
 
-            if(role == 'all'){
-                table.column(3).search('').draw(); // reset filter
-            } else {
-                table.column(3).search(role).draw(); // filter role
+            if(role === 'all'){
+                table.search('').draw();
+            }else{
+                table.search(role).draw();
             }
-
-            // UI aktif button
-            $('.btn-filter').removeClass('active');
-            $(this).addClass('active');
         });
 
-        // nomor urut tetap rapi
+        //nomor urut tetap rapi
         table.on('order.dt search.dt', function () {
-            table.column(0, { search:'applied', order:'applied' })
+             table.column(1, { search:'applied', order:'applied' })
                 .nodes()
                 .each(function (cell, i) {
                     cell.innerHTML = i + 1;
                 });
         }).draw(); 
-
     });
 </script>
 @stop

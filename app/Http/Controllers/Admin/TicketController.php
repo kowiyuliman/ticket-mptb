@@ -106,24 +106,24 @@ class TicketController extends Controller
     }
 
     public function takeTicket($id)
-{
-    $ticket = Ticket::findOrFail($id);
+    {
+        $ticket = Ticket::findOrFail($id);
 
-    // hanya boleh ambil jika masih open
-    if($ticket->status != 'open'){
+        // hanya boleh ambil jika masih open
+        if($ticket->status != 'open'){
+            return redirect('/admin/tickets')
+                ->with('error','Ticket sudah diambil');
+        }
+
+        $ticket->update([
+            'status' => 'on_progress',
+            'assigned_to' => Auth::id(),
+            'started_at' => now()
+        ]);
+
         return redirect('/admin/tickets')
-            ->with('error','Ticket sudah diambil');
+            ->with('success','Ticket berhasil diambil & mulai dikerjakan');
     }
-
-    $ticket->update([
-        'status' => 'on_progress',
-        'assigned_to' => Auth::id(),
-        'started_at' => now()
-    ]);
-
-    return redirect('/admin/tickets')
-        ->with('success','Ticket berhasil diambil & mulai dikerjakan');
-}
 
     public function comment(Request $request,$id)
     {

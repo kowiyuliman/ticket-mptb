@@ -154,6 +154,31 @@ class UserController extends Controller
         return back()->with('success','Import user berhasil');
     }
 
+    public function bulkDelete(Request $request)
+    {
+        $ids = json_decode(
+            $request->selected_users,
+            true
+        );
+        if(empty($ids)){
+            return back()
+                ->with(
+                    'error',
+                    'Tidak ada user dipilih'
+                );
+        }
+        User::whereIn('id',$ids)
+            ->where('id','!=',auth()->id())
+            ->delete();
+            
+        User::whereIn('id',$ids)->delete();
+        return back()
+            ->with(
+                'success',
+                count($ids).' user berhasil dihapus'
+            );
+    }
+
     public function destroy($id)
     {
         $user = User::findOrFail($id);

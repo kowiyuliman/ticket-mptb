@@ -17,20 +17,22 @@
                 Open Tickets
             </h3>
         </div>
-        <div class="card-body table-responsive">
-             <table id="table-open" class="table table-bordered table-hover">
-                <thead class="bg-primary bg-info">
-                    <tr>
-                        <th>No</th>
-                        <th>Kode</th>
-                        <th>Nama</th>
-                        <th>Status</th>
-                        <th>Ip Address</th>
-                        <th>Trouble</th>
-                        <th>Time</th>
-                        <th>Action</th>
-                    </tr>
-                </thead>
+        <br>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table id="table-open" class="table table-bordered table-hover">
+                    <thead class="bg-primary bg-info">
+                        <tr>
+                            <th>No</th>
+                            <th>Kode</th>
+                            <th>Nama</th>
+                            <th>Status</th>
+                            <th>Ip Address</th>
+                            <th>Trouble</th>
+                            <th>Time</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
                 <tbody id="open-body">
                     @foreach($tickets_open as $ticket)
                         <tr>
@@ -60,6 +62,8 @@
                 </tbody>
             </table>
         </div>
+    </div>
+    </div>
 </div>
 
 <br>
@@ -70,7 +74,9 @@
             On Progress Tickets
         </h3>
     </div>
-    <div class="card-body table-responsive">
+    <br>
+    <div class="card-body p-0">
+        <div class="table-responsive">
         <table id="table-progress" class="table table-bordered table-hover">
             <thead class="bg-primary text-white">
                 <tr>
@@ -110,6 +116,7 @@
         </table>
     </div>
 </div>
+</div>
 
 <br>
 
@@ -119,7 +126,9 @@
             Pending Ticket
         </h3>
     </div>
-    <div class="card-body table-responsive">
+    <br>
+    <div class="card-body p-0">
+        <div class="table-responsive">
         <table id="table-pending" class="table table-bordered table-hover">
                 <thead class="bg-warning text-white">
                     <tr>
@@ -168,7 +177,9 @@
             Closed Ticket
         </h3>
     </div>
-    <div class="card-body table-responsive">
+    <br>
+    <div class="card-body p-0">
+        <div class="table-responsive">
         <table id="table-closed" class="table table-bordered table-hover">
             <thead class="bg-success text-white">
                 <tr>
@@ -219,6 +230,7 @@
         </table>
     </div>
 </div>
+</div>
 
 @stop
 
@@ -226,7 +238,6 @@
 @section('css')
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
     <link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.5.0/css/responsive.dataTables.min.css">
-    <script src="https://cdn.datatables.net/responsive/2.5.0/js/dataTables.responsive.min.js"></script>
 
     <style>
         td:first-child, th:first-child {
@@ -249,6 +260,15 @@
             margin:2px;
             border-radius:8px;
             min-width:36px;
+        }
+
+        .action-btn{
+            min-width:35px;
+            margin:2px;
+        }
+
+        td:last-child{
+            white-space:nowrap !important;
         }
 
     @media(max-width:768px)
@@ -358,50 +378,31 @@
 @section('js')
 <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
 <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/responsive/2.5.0/js/dataTables.responsive.min.js"></script>
+
+let lastOpenCount = 0;
+let lastProgressCount = 0;
 
     <script>
-        $(document).ready(function() {
-            $('#table-open').DataTable({
-                responsive: true,
-                autoWidth: false,
-                pageLength: 5,
-                lengthMenu: [5,10,25,50],
-                language: {
-                    emptyTable: "Tidak ada tiket"
-                }
-            });
+        $(document).ready(function(){
 
-            $('#table-progress').DataTable({
-                responsive: true,
-                autoWidth: false,
-                pageLength: 5,
-                lengthMenu: [5,10,25,50],
-                language: {
-                    emptyTable: "Tidak ada tiket"
-                }
-            });
+    const tableConfig = {
+        responsive: true,
+        autoWidth: false,
+        pageLength: 5,
+        lengthMenu: [5,10,25,50],
+        language:{
+            emptyTable:"Tidak ada tiket"
+        }
+    };
 
-            $('#table-pending').DataTable({
-                 responsive: true,
-                autoWidth: false,
-                pageLength: 5,
-                lengthMenu: [5,10,25,50],
-                language: {
-                    emptyTable: "Tidak ada tiket"
-                }
-            });
+        $('#table-open').DataTable(tableConfig);
+        $('#table-progress').DataTable(tableConfig);
+        $('#table-pending').DataTable(tableConfig);
+        $('#table-closed').DataTable(tableConfig);
 
-            $('#table-closed').DataTable({
-                 responsive: true,
-                autoWidth: false,
-                pageLength: 5,
-                lengthMenu: [5,10,25,50],
-                language: {
-                    emptyTable: "Tidak ada tiket"
-                }
-            });
+    });
 
-        });
     </script>
 
     <script>
@@ -430,104 +431,6 @@
         @if(session('error'))
             showToast("{{ session('error') }}", 'error');
         @endif
-    </script>
-
-    <script>
-        async function loadTickets(){
-                try{
-                    const response = await fetch('/admin/ticket/fetch');
-                    const data = await response.json();
-                    // pertama kali load
-                    if(lastOpenCount === 0){
-                        lastOpenCount = data.open.length;
-                        lastProgressCount = data.progress.length;
-                        // lastPendingCount = data.pending.length;
-                        // lastClosedCount = data.closed.length;
-                    }else{
-                        // OPEN
-                        if(data.open.length > lastOpenCount){
-                            showToast(
-                                'Ticket baru masuk',
-                                'success'
-                            );
-                            playSound();
-                        }
-                        // PROGRESS
-                        if(data.progress.length > lastProgressCount){
-                            showToast(
-                                'Ticket masuk ke Progress',
-                                'warning'
-                            );
-                        // }
-                        // // PENDING
-                        // if(data.pending.length > lastPendingCount){
-
-                        //     showToast(
-                        //         'Ticket menjadi Pending',
-                        //         'warning'
-                        //     );
-                        // }
-
-                        // // CLOSED
-                        // if(data.closed.length > lastClosedCount){
-                        //     showToast(
-                        //         'Ticket berhasil diselesaikan',
-                        //         'success'
-                        //     );
-                        // }
-
-                        lastOpenCount = data.open.length;
-                        lastProgressCount = data.progress.length;
-                        // lastPendingCount = data.pending.length;
-                        // lastClosedCount = data.closed.length;
-                    }
-
-                    updateOpenTable(data.open);
-                    updateProgressTable(data.progress);
-                    // updatePendingTable(data.pending);
-
-                    // updateClosedTable(data.closed);
-
-                }
-                catch(error){
-                    console.log(error);
-                }
-            }}
-    </script>
-
-    <script>
-        function updateOpenTable(tickets){
-            let html = '';
-            tickets.forEach((ticket, index) => {
-                html += `
-                <tr>
-                    <td>${index + 1}</td>
-                    <td>${ticket.ticket_code}</td>
-                    <td>${ticket.nama}</td>
-                    <td>
-                        <span class="badge bg-info">
-                            Open
-                        </span>
-                    </td>
-                    <td>${ticket.ip_address ?? '-'}</td>
-                    <td>${ticket.deskripsi ?? '-'}</td>
-                    <td>${formatDate(ticket.created_at)}</td>
-                    <td>
-                        <form action="/admin/ticket/take/${ticket.id}" method="POST">
-                            <button class="btn btn-success btn-sm action-btn">
-                                <i class="fas fa-hand-paper"></i>
-                            </button>
-                            <a href="/admin/ticket/show/${ticket.id}"
-                            class="btn btn-info btn-sm action-btn">
-                                <i class="fas fa-eye"></i>
-                            </a>
-                        </form>
-                    </td>
-                </tr>
-                `;
-            });
-            document.getElementById('open-body').innerHTML = html;
-        }
     </script>
 
     <script>
@@ -562,13 +465,24 @@
             }
     </script>   
 
-
-    //load ticket
     <script>
-        loadTickets();
-        setInterval(() => {
-            loadTickets();
-        }, 5000);
+        setInterval(async () => {
+            const response =
+                await fetch('/admin/ticket/fetch');
+            const data =
+                await response.json();
+            if(data.open.length > lastOpenCount){
+                showToast(
+                    'Ticket baru masuk',
+                    'success'
+                );
+                playSound();
+                setTimeout(() => {
+                    location.reload();
+                },1000);
+            }
+            lastOpenCount = data.open.length;
+        },5000);
     </script>
 
     <script>

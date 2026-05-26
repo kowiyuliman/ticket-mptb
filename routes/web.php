@@ -66,6 +66,9 @@ Route::prefix('admin')->middleware(['auth'])->group(function(){
     //route import bulk user
     Route::post('/users/import', [AdminUserController::class,'import']);
 
+    //route delete bulk
+    Route::delete('/users/bulkDelete', [AdminUserController::class,'bulkDelete']);
+
     //auto refresh new ticket
     Route::get('/ticket/fetch', [AdminTicketController::class, 'fetchTickets']);
 
@@ -76,7 +79,6 @@ Route::prefix('admin')->middleware(['auth'])->group(function(){
 
 
 Route::get('/admin/check-ticket', function(){
-
     if(auth()->user()->role != 'admin'){
         return response()->json([
             'ticket_id' => 0
