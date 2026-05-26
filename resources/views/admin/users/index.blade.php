@@ -120,6 +120,7 @@
         @endforeach
     </tbody> 
 </table>
+<div id="toast-container"></div>
 @stop
 
 
@@ -130,11 +131,42 @@
                     text-align: center;
                     width: 50px;
                 }
-    </style>
-    <style>
-            .btn-filter.active {
+
+        .btn-filter.active {
             box-shadow: 0 0 10px rgba(0,0,0,0.3);
             transform: scale(1.05);
+        }
+
+        .toast-custom{
+            position:fixed;
+            top:20px;
+            right:20px;
+            min-width:300px;
+            padding:15px 20px;
+            color:#fff;
+            border-radius:10px;
+            z-index:9999;
+            box-shadow:0 5px 15px rgba(0,0,0,.2);
+            animation:slideIn .4s ease;
+        }
+
+        .toast-success{
+            background:#28a745;
+        }
+
+        .toast-error{
+            background:#dc3545;
+        }
+
+        @keyframes slideIn{
+            from{
+                transform:translateX(100%);
+                opacity:0;
+            }
+            to{
+                transform:translateX(0);
+                opacity:1;
+            }
         }
     </style>
 @stop
@@ -234,5 +266,46 @@
                 });
         }).draw(); 
     });
+
+    function showToast(message, type='success')
+    {
+        let toast = document.createElement('div');
+
+        toast.className =
+            'toast-custom toast-' + type;
+
+        toast.innerHTML = message;
+
+        document.body.appendChild(toast);
+
+        setTimeout(() => {
+
+            toast.style.opacity = '0';
+            toast.style.transform =
+                'translateX(100%)';
+
+            setTimeout(() => {
+
+                toast.remove();
+
+            },500);
+
+        },3000);
+    }
+
+    @if(session('success'))
+        showToast(
+            "{{ session('success') }}",
+            'success'
+        );
+    @endif
+
+    @if(session('error'))
+        showToast(
+            "{{ session('error') }}",
+            'error'
+        );
+    @endif
+    
 </script>
 @stop

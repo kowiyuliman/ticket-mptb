@@ -101,12 +101,12 @@ class UserController extends Controller
 {
     $user = User::findOrFail($id);
 
-    // 🔥 proteksi leader
+    // proteksi leader
     if (auth()->user()->role == 'leader' && $user->leader_id != auth()->id()) {
         abort(403);
     }
 
-    // 🔥 VALIDASI BERBEDA
+    // VALIDASI BERBEDA
     $rules = [
         'name' => 'required',
         'username' => 'required|unique:users,username,'.$user->id,
@@ -119,7 +119,7 @@ class UserController extends Controller
 
     $request->validate($rules);
 
-    // 🔥 NORMALISASI USERNAME
+    // NORMALISASI USERNAME
     $username = strtolower(trim($request->username));
 
     $data = [
@@ -127,13 +127,13 @@ class UserController extends Controller
         'username' => $username,
     ];
 
-    // 🔥 hanya admin boleh ubah role & leader
+    // hanya admin boleh ubah role & leader
     if(auth()->user()->role == 'admin'){
         $data['role'] = $request->role;
         $data['leader_id'] = $request->leader_id;
     }
 
-    // 🔥 password optional
+    // password optional
     if ($request->password) {
         $data['password'] = bcrypt($request->password);
     }
@@ -156,27 +156,34 @@ class UserController extends Controller
 
     public function bulkDelete(Request $request)
     {
-        $ids = json_decode(
-            $request->selected_users,
-            true
-        );
-        if(empty($ids)){
+        try{
+            $ids = json_decode(
+                $request->selected_users,
+                true
+            );
+            if(empty($ids)){
+                return back()
+                    ->with(
+                        'error',
+                        'Tidak ada user dipilih'
+                    );
+            }
+            User::whereIn('id',$ids)
+                ->where('id','!=',auth()->id())
+                ->delete();
+
+            User::whereIn('id',$ids)->delete();
             return back()
                 ->with(
-                    'error',
-                    'Tidak ada user dipilih'
+                    'success',
+                    count($ids).' user berhasil dihapus'
                 );
-        }
-        User::whereIn('id',$ids)
-            ->where('id','!=',auth()->id())
-            ->delete();
-            
-        User::whereIn('id',$ids)->delete();
-        return back()
-            ->with(
-                'success',
-                count($ids).' user berhasil dihapus'
+            }catch(\Exception $e){
+            return back()->with(
+                'error',
+                'Gagal menghapus user'
             );
+        }
     }
 
     public function destroy($id)
