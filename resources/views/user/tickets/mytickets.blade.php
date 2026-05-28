@@ -5,7 +5,6 @@
 @section('content_header')
     <h1>My Tickets</h1>
 @stop
-
 @section('content')
 
 <table id="table-myticket" class="table table-bordered table-striped">
@@ -43,8 +42,9 @@
                 </td>
             </tr>
         @endforeach
-    </tbody>
-        <!-- FLOATING BUTTON -->
+    </tbody>    
+</table>
+<!-- FLOATING BUTTON -->
         <div id="wa-button" class="wa-button">
             <i class="fab fa-whatsapp"></i>
         </div>
@@ -66,12 +66,11 @@
             </div>
         </div>
     </div>
-    </div>
 </div>
-</table>
-<!-- {{ $tickets->links() }} Pagination -->
-@stop
+</div>
+@include('layouts.footer')
 
+@stop
 {{-- CSS DataTables --}}
 @section('css')
 <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
@@ -100,7 +99,7 @@
         /* BUTTON */
         .wa-button {
             position: fixed;
-            bottom: 20px;
+            bottom: 80px;
             right: 20px;
             background: #25D366;
             width: 55px;
@@ -119,7 +118,7 @@
         /* CHAT BOX */
         .wa-chat-box {
             position: fixed;
-            bottom: 90px;
+            bottom: 145px;
             right: 20px;
             width: 280px;
             background: white;

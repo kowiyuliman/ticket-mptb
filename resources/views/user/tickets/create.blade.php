@@ -35,4 +35,6 @@
         </div>
         <button type="submit" class="btn btn-success mt-2">Submit Ticket</button>
     </form>
+<br>
+    @include('layouts.footer')
 @stop

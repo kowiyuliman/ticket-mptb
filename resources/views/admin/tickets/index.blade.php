@@ -137,7 +137,7 @@
                         <th>Nama</th>
                         <th>Status</th>
                         <th>IT</th>
-                        <th>Remaks</th>
+                        <th>Trouble</th>
                         <th>Action</th>
                     </tr>
                 </thead>
@@ -188,7 +188,7 @@
                     <th>Nama</th>
                     <th>Status</th>
                     <th>IT</th>
-                    <th>Remaks</th>
+                    <th>Trouble</th>
                     <th>Durasi Pengerjaan</th>
                     <th>Action</th>
                 </tr>
@@ -231,7 +231,7 @@
     </div>
 </div>
 </div>
-
+@include('layouts.footer')
 @stop
 
 {{-- CSS DataTables --}}
@@ -379,9 +379,6 @@
 <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
 <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
 <script src="https://cdn.datatables.net/responsive/2.5.0/js/dataTables.responsive.min.js"></script>
-
-let lastOpenCount = 0;
-let lastProgressCount = 0;
 
     <script>
         $(document).ready(function(){

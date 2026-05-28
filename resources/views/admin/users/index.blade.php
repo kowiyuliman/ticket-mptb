@@ -121,6 +121,7 @@
     </tbody> 
 </table>
 <div id="toast-container"></div>
+@include('layouts.footer')
 @stop
 
 

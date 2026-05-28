@@ -11,8 +11,8 @@
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
-        
     </head>
+
     <body class="font-sans antialiased">
         <div class="min-h-screen bg-gray-100 dark:bg-gray-900">
             @include('layouts.navigation')
@@ -29,6 +29,7 @@
                 {{ $slot }}
             </main>
         </div>
+
         <a href="https://wa.me/6281234567890" 
             class="wa-floating" 
             target="_blank">
@@ -148,7 +149,7 @@ function showFloatingNotif(message){
     // polling tiap 5 detik
     setInterval(checkNewTicket, 5000);
 </script>       
-                
+@include('layouts.footer')    
     </body>
 </html>
 

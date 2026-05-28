@@ -148,89 +148,123 @@
                 </div>
             </div>
 
-        {{-- Quick Info --}}
-        <div class="col-md-6">
-            <div class="card card-outline card-dark">
-                <div class="card-header">
-                    <h3 class="card-title">Quick Info</h3>
-                </div>
-                <div class="card-body">
-                    <p>
-                        <b>Total Ticket :</b>
-                        <span class="badge bg-primary">
-                            {{ $total }}
-                        </span>
-                    </p>
-                    <p>
-                        <b>Open :</b>
-                        <span class="badge-stat badge-open">
-                            {{ $open }}
-                        </span>
-                        </p>
-                    <p>
-                        <b>On Progress :</b>
-                        <span class="badge-stat badge-progress">
-                            {{ $progress }}
-                        </span>
-                    </p>
-                    <p>
-                        <b>Closed :</b>
-                        <span class="badge-stat badge-closed">
-                            {{ $closed }}
-                        </span>
-                    </p>
-                    
-                    <div class="card card-outline card-dark">
-                        <div class="card-header">
-                            <h3 class="card-title">Workload Teknisi</h3>
-                        </div>
-                        <div class="card-body table-responsive">
-                            <table class="table table-bordered table-striped">
-                                <thead>
-                                    <tr>
-                                        <th>Nama IT</th>
-                                        <th>Total Ticket</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach($technicianWorkload as $tech)
-                                        <tr>
-                                            <td>
-                                                {{ $tech->technician->username ?? '-' }}
-                                            </td>
-                                            <td>
-                                                <span class="badge bg-primary">
-                                                    {{ $tech->total_ticket }}
-                                                </span>
-                                            </td>
-                                        </tr>
-                                    @endforeach
-                                </tbody>
-                            </table>
-                        </div>
+        <!-- QUICK INFO -->
+    <div class="col-lg-4 col-md-12 mb-3">
+        <div class="card card-outline card-dark shadow-sm quick-card">
+            <div class="card-header">
+                <h3 class="card-title">
+                    Quick Info
+                </h3>
+            </div>
+            <div class="card-body">
+                <div class="quick-info-item">
+                    <div>
+                        <i class="fas fa-ticket-alt text-primary"></i>
+                        Total Ticket
                     </div>
+                    <span class="badge bg-primary quick-badge">
+                        {{ $total }}
+                    </span>
+                </div>
+                <div class="quick-info-item">
+                    <div>
+                        <i class="fas fa-folder-open text-warning"></i>
+                        Open
+                    </div>
+                    <span class="badge-stat badge-open">
+                        {{ $open }}
+                    </span>
+                </div>
+                <div class="quick-info-item">
+                    <div>
+                        <i class="fas fa-spinner text-primary"></i>
+                        On Progress
+                    </div>
+                    <span class="badge-stat badge-progress">
+                        {{ $progress }}
+                    </span>
+                </div>
+                <div class="quick-info-item">
+                    <div>
+                        <i class="fas fa-pause-circle text-danger"></i>
+                        Pending
+                    </div>
+                    <span class="badge-stat badge-pending">
+                        {{ $pending }}
+                    </span>
+                </div>
+                <div class="quick-info-item">
+                    <div>
+                        <i class="fas fa-check-circle text-success"></i>
+                        Closed
+                    </div>
+                    <span class="badge-stat badge-closed">
+                        {{ $closed }}
+                    </span>
                 </div>
             </div>
         </div>
-        
-        <!-- <div class="col-md-6">
-            <div class="card card-outline card-dark">
-                <div class="card-header">
-                    <h3 class="card-title">Statistik Tiket per-leader</h3>
-                </div>
-                <div class="card-body">
-                    <canvas id="leaderChart"></canvas>
-                </div>
-            </div>
-        </div> -->
+    </div>
 
+
+<!-- WORKLOAD TEKNISI -->
+<div class="col-lg-8 col-md-12 mb-3">
+
+    <div class="card card-outline card-dark shadow-sm">
+
+        <div class="card-header">
+            <h3 class="card-title">
+                <i class="fas fa-user-cog text-primary"></i>
+                Workload IT
+            </h3>
+        </div>
+
+        <div class="card-body table-responsive p-0">
+
+            <table class="table table-hover mb-0">
+
+                <thead class="bg-light">
+                    <tr>
+                        <th>Nama</th>
+                        <th class="text-center">
+                            Total Ticket
+                        </th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @foreach($technicianWorkload as $tech)
+                    <tr>
+
+                        <td>
+                            <i class="fas fa-user-circle text-secondary"></i>
+                            {{ $tech->technician->username ?? '-' }}
+                        </td>
+
+                        <td class="text-center">
+                            <span class="badge bg-primary px-3 py-2">
+                                {{ $tech->total_ticket }}
+                            </span>
+                        </td>
+
+                    </tr>
+                    @endforeach
+                </tbody>
+
+            </table>
+
+        </div>
+    </div>
+</div>
+
+        
     </div>
 </div>
 
 <audio id="notifSound" preload="auto">
     <source src="/sound/notification.mp3" type="audio/mpeg">
 </audio>
-
+@include('layouts.footer')
 @stop
 
 @section('js')
@@ -686,6 +720,61 @@
                 text-align: center;
                 width: 50px;
             }
+
+        /* QUICK INFO */
+        .quick-card{
+            border-radius:15px;
+        }
+
+        .quick-info-item{
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+
+            padding:12px 0;
+
+            border-bottom:1px solid #f1f1f1;
+
+            font-size:15px;
+            font-weight:500;
+        }
+
+        .quick-info-item:last-child{
+            border-bottom:none;
+        }
+
+        .quick-info-item i{
+            margin-right:8px;
+            width:18px;
+            text-align:center;
+        }
+
+        .quick-badge{
+            font-size:14px;
+            padding:7px 14px;
+            border-radius:10px;
+        }
+
+        /* WORKLOAD TABLE */
+        .table-hover tbody tr:hover{
+            background:#f8f9fa;
+            transition:0.2s;
+        }
+
+        /* MOBILE */
+        @media(max-width:768px){
+
+            .quick-info-item{
+                font-size:13px;
+                padding:10px 0;
+            }
+
+            .quick-badge,
+            .badge-stat{
+                font-size:11px;
+                padding:5px 10px;
+            }
+        }
     </style>
 
     <style>
