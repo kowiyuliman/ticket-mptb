@@ -37,7 +37,44 @@
         </div>
         @endforeach
 
- 
+    <!-- WORKLOAD IT -->
+    <div class="col-md-12">
+        <div class="card card-outline card-dark shadow-sm">
+            <div class="card-header">
+                <h3 class="card-title">
+                    Workload IT
+                </h3>
+            </div>
+            <div class="card-body table-responsive p-0">
+                <table class="table table-hover mb-0">
+                    <thead class="bg-light">
+                        <tr>
+                            <th>Nama</th>
+                            <th class="text-center">
+                                Total Ticket
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach($technicianWorkload as $tech)
+                        <tr>
+                            <td>
+                                <i class="fas fa-user-circle text-secondary"></i>
+                                {{ $tech->technician->username ?? '-' }}
+                            </td>
+                            <td class="text-center">
+                                <span class="badge bg-primary px-3 py-2">
+                                    {{ $tech->total_ticket }}
+                                </span>
+                            </td>
+                        </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
     <div class="col-md-12">
             <div class="card-header">
                 <h3 class="card-title">Statistik Tiket</h3>
@@ -149,7 +186,7 @@
             </div>
 
         <!-- QUICK INFO -->
-    <div class="col-lg-4 col-md-12 mb-3">
+    <!-- <div class="col-lg-4 col-md-12 mb-3">
         <div class="card card-outline card-dark shadow-sm quick-card">
             <div class="card-header">
                 <h3 class="card-title">
@@ -204,60 +241,7 @@
                 </div>
             </div>
         </div>
-    </div>
-
-
-<!-- WORKLOAD TEKNISI -->
-<div class="col-lg-8 col-md-12 mb-3">
-
-    <div class="card card-outline card-dark shadow-sm">
-
-        <div class="card-header">
-            <h3 class="card-title">
-                <i class="fas fa-user-cog text-primary"></i>
-                Workload IT
-            </h3>
-        </div>
-
-        <div class="card-body table-responsive p-0">
-
-            <table class="table table-hover mb-0">
-
-                <thead class="bg-light">
-                    <tr>
-                        <th>Nama</th>
-                        <th class="text-center">
-                            Total Ticket
-                        </th>
-                    </tr>
-                </thead>
-
-                <tbody>
-                    @foreach($technicianWorkload as $tech)
-                    <tr>
-
-                        <td>
-                            <i class="fas fa-user-circle text-secondary"></i>
-                            {{ $tech->technician->username ?? '-' }}
-                        </td>
-
-                        <td class="text-center">
-                            <span class="badge bg-primary px-3 py-2">
-                                {{ $tech->total_ticket }}
-                            </span>
-                        </td>
-
-                    </tr>
-                    @endforeach
-                </tbody>
-
-            </table>
-
-        </div>
-    </div>
-</div>
-
-        
+    </div> --> 
     </div>
 </div>
 

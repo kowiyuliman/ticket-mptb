@@ -75,6 +75,12 @@ Route::prefix('admin')->middleware(['auth'])->group(function(){
     //dashboard realtime
     Route::get('/dashboard/realtime', [DashboardController::class, 'realtime']);
 
+    // merge ticket
+    Route::post('/ticket/mergeTicket/{id}', [AdminTicketController::class, 'mergeTicket']);
+
+    // search ticket
+    Route::get('/ticket/searchTicket', [AdminTicketController::class, 'searchTicket']
+);
 });
 
 

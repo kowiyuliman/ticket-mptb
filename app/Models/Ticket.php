@@ -21,7 +21,9 @@ class Ticket extends Model
         'started_at',
         'created_by',
         'resolved_at',
-        'no_whatsapp'
+        'no_whatsapp',
+        'merged_to',
+        'merge_reason'
     ];
 
     protected $casts = [
@@ -124,4 +126,21 @@ class Ticket extends Model
         return $this->hasMany(TicketTimeline::class);
     }
 
+    public function mergedTicket()
+    {
+        return $this->belongsTo(Ticket::class, 'merged_to');
+    }
+
+    public function mergedChildren()
+    {
+        return $this->hasMany(Ticket::class, 'merged_to');
+    }
+
+    public function mergedTickets()
+    {
+        return $this->hasMany(
+            Ticket::class,
+            'merged_to'
+        );
+    }
 }

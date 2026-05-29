@@ -89,11 +89,14 @@
                     </div>
                     <div class="form-group">
                         <label>Status</label>
-                        <select name="status" class="form-control" required>
-                            <option value="open" {{ $ticket->status=='open'?'selected':'' }}>Open</option>
-                            <option value="on_progress" {{ $ticket->status=='on_progress'?'selected':'' }}>On Progress</option>
-                            <option value="pending" {{ $ticket->status=='pending'?'selected':'' }}>Pending</option>
-                            <option value="closed" {{ $ticket->status=='closed'?'selected':'' }}>Closed</option>
+                        <select name="status" id="statusSelect" class="form-control" required>
+                            <option value="open" {{ $ticket->status=='open'?'selected':'' }}> Open </option>
+                            <option value="on_progress" {{ $ticket->status=='on_progress'?'selected':'' }}> On Progress </option>
+                            <option value="pending" {{ $ticket->status=='pending'?'selected':'' }}> Pending </option>
+                            <option value="closed" {{ $ticket->status=='closed'?'selected':'' }}> Closed </option>
+                            <option value="merged" {{ $ticket->status=='merged'?'selected':'' }}>
+                                Merge Ticket
+                            </option>
                         </select>
                     </div>
                 </div>
@@ -218,16 +221,21 @@
                         @endif
                         {{ $ticket->durasi_menit }}
                     </span>
-                
+
+                @elseif($ticket->status == 'merged')
+                    <span class="badge bg-secondary">
+                        Merged
+                    </span>
+
                 @else
                     <span class="badge bg-secondary">
                         Belum ada aktivitas
                     </span>
+                
             @endif
         </p>
     </div>
 <br>
-
     <form action="{{ url('/admin/ticket/cancel/'.$ticket->id) }}"
         method="POST">
         @csrf
@@ -249,6 +257,71 @@
         </button>
     </form>
 </div>
+</div>
+{{-- MODAL MERGE --}}
+<div class="modal fade" id="mergeModal" tabindex="-1">
+    <div class="modal-dialog">
+        <form action="{{ url('/admin/ticket/merge/'.$ticket->id) }}"
+              method="POST">
+            @csrf
+            <div class="modal-content">
+                <div class="modal-header bg-warning">
+                    <h5 class="modal-title">
+                        Merge Ticket
+                    </h5>
+                    <button type="button"
+                            class="close"
+                            data-dismiss="modal">
+                        <span>&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    {{-- TICKET INDUK --}}
+                    <div class="form-group">
+                        <label>Nomor Ticket Induk</label>
+                        <input type="text"
+                               name="target_ticket_id"
+                               class="form-control"
+                               placeholder="Masukkan ID Ticket"
+                               required>
+                    </div>
+                    {{-- ALASAN --}}
+                    <div class="form-group">
+                        <label>Alasan Merge</label>
+
+                        <textarea name="merge_reason"
+                                  class="form-control"
+                                  rows="4"
+                                  placeholder="Contoh: Ticket duplicate user yang sama"
+                                  required></textarea>
+                    </div>
+
+                    <div class="alert alert-info">
+                        Ticket ini akan digabung ke ticket induk.
+                    </div>
+
+                </div>
+
+                <div class="modal-footer">
+
+                    <button type="button"
+                            class="btn btn-secondary"
+                            data-dismiss="modal">
+
+                        Batal
+                    </button>
+
+                    <button type="submit"
+                            class="btn btn-warning">
+
+                        <i class="fas fa-code-branch"></i>
+                        Merge Ticket
+                    </button>
+
+                </div>
+            </div>
+        </form>
+    </div>
 </div>
 @stop
 
@@ -326,6 +399,7 @@
 @section('js')
 <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
 <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
 
     <script>
     function showToast(message, type = 'success') {
@@ -398,6 +472,27 @@
             emptyTable: "Tidak ada tiket cancel"
         }
     });
+</script>
+
+<script>
+
+document.addEventListener('DOMContentLoaded', function(){
+
+    const statusSelect =
+        document.getElementById('statusSelect');
+
+    statusSelect.addEventListener('change', function(){
+
+        if(this.value === 'merged'){
+
+            $('#mergeModal').modal('show');
+
+        }
+
+    });
+
+});
+
 </script>
 
 @stop

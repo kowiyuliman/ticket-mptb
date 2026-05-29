@@ -79,8 +79,14 @@
                         <span class="badge bg-primary">On Progress</span>
                     @elseif($ticket->status == 'pending')
                         <span class="badge bg-warning">Pending</span>
+                    @elseif($ticket->status == 'merged')
+                        <span class="badge bg-dark">Merged</span>
                     @elseif($ticket->status == 'closed')
                         <span class="badge bg-success">Closed</span>
+                    @elseif($ticket->status == 'merged')
+                        <span class="badge bg-dark">
+                            Merged
+                        </span>
                     @endif
                 </p>
                 <p><b>Kategori:</b><br>{{ ucfirst($ticket->kategori) }}</p>
@@ -88,6 +94,15 @@
                 <p><b>Dibuat:</b><br>{{ $ticket->created_at->format('d-m-Y H:i') }}</p>
                 <p><b>Durasi:</b><br>{{ $ticket->durasi_menit ?? '-'  }}</p>
             </div>
+            @if($ticket->status == 'merged' && $ticket->mergedTicket)
+            <div class="alert alert-secondary">
+                <i class="fas fa-code-branch"></i>
+                Ticket ini telah di merge ke:
+                <a href="/admin/ticket/{{ $ticket->mergedTicket->id }}">
+                    <b>{{ $ticket->mergedTicket->ticket_code }}</b>
+                </a>
+            </div>
+            @endif
         </div>
     </div>
 </div>
@@ -160,7 +175,6 @@
     </p>
     </div>
 </div>
-
     <div class="card mt-3">
         <div class="card-header">
             <h3 class="card-title">
@@ -184,6 +198,60 @@
             @endforeach
         </div>
     </div>
+
+    {{-- MERGED TICKETS --}}
+@if($ticket->mergedTickets->count())
+
+<div class="card mt-3">
+
+    <div class="card-header bg-warning">
+        <h3 class="card-title">
+            Merged Tickets
+        </h3>
+    </div>
+
+    <div class="card-body">
+
+        <table class="table table-bordered">
+
+            <thead>
+                <tr>
+                    <th>Ticket</th>
+                    <th>User</th>
+                    <th>Alasan Merge</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                @foreach($ticket->mergedTickets as $merge)
+
+                <tr>
+
+                    <td>
+                        {{ $merge->ticket_code }}
+                    </td>
+
+                    <td>
+                        {{ $merge->nama }}
+                    </td>
+
+                    <td>
+                        {{ $merge->merge_reason }}
+                    </td>
+
+                </tr>
+
+                @endforeach
+
+            </tbody>
+
+        </table>
+
+    </div>
+</div>
+@endif
+
 </div>
 </div>
 @stop

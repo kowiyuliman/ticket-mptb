@@ -44,16 +44,24 @@ class TicketController extends Controller
 
     public function show($id)
     {
-        $ticket = Ticket::with('histories','comments.user','timelines')->findOrFail($id);
+        $ticket = Ticket::with('histories','comments.user','timelines','mergedChildren')->findOrFail($id);
         return view('admin.tickets.show', compact('ticket'));
     }
 
     public function edit($id){
-        $ticket = Ticket::with('comments.user')->findOrFail($id);
+        $ticket = Ticket::with('comments.user','mergedChildren')->findOrFail($id);
 
         // PROTEKSI
         if($ticket->assigned_to != Auth::id()){
             return redirect()->back()->with('error','Bukan tiket kamu');
+        }
+
+        if($ticket->status == 'merged'){
+            return redirect('/admin/tickets')
+                ->with(
+                    'error',
+                    'Ticket merged tidak bisa diedit'
+                );
         }
 
         $technicians = User::whereIn('role',['admin','technician'])->get();
@@ -265,6 +273,79 @@ class TicketController extends Controller
             'pending' => $tickets_pending,
             'closed' => $tickets_closed,
         ]);
+    }
+
+    public function mergeTicket(Request $request, $id)
+    {
+        $request->validate([
+            'target_ticket_id' => 'required|exists:tickets,id',
+            'merge_reason' => 'required'
+        ]);
+
+        $ticket = Ticket::findOrFail($id);
+
+        $targetTicket = Ticket::findOrFail(
+            $request->target_ticket_id
+        );
+
+        // tidak boleh merge diri sendiri
+        if($ticket->id == $targetTicket->id){
+
+            return back()->with(
+                'error',
+                'Ticket tidak bisa merge ke dirinya sendiri'
+            );
+        }
+
+        // update ticket
+        $ticket->update([
+
+            'status' => 'merged',
+
+            'merged_to' => $targetTicket->id,
+
+            'merge_reason' => $request->merge_reason,
+
+            'resolved_at' => now()
+        ]);
+
+        // timeline merge
+        TicketTimeline::create([
+
+            'ticket_id' => $ticket->id,
+
+            'status' => 'merged',
+
+            'description' =>
+                'Ticket di merge ke #'
+                .$targetTicket->ticket_code.
+                ' | alasan: '
+                .$request->merge_reason,
+
+            'user_id' => auth()->id()
+        ]);
+
+        return redirect('/admin/tickets')
+            ->with(
+                'success',
+                'Ticket berhasil di merge'
+            );
+    }
+
+    public function searchTicket(Request $request)
+    {
+        $keyword = $request->keyword;
+
+        $tickets = Ticket::where(
+                'ticket_code',
+                'LIKE',
+                "%{$keyword}%"
+            )
+            ->where('status', '!=', 'merged')
+            ->limit(10)
+            ->get();
+
+        return response()->json($tickets);
     }
 
 

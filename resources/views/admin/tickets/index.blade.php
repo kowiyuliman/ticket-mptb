@@ -55,7 +55,7 @@
                                     class="btn btn-info btn-sm" title="Detail">
                                         <i class="fas fa-eye"></i>
                                     </a>
-                                </form>
+                                </form> 
                             </td>
                         </tr>
                     @endforeach
